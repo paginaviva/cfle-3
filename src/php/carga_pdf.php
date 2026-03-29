@@ -267,12 +267,13 @@ include __DIR__ . '/layout_header.php';
                         📥 Descargar JSON Completo
                     </a>
                     
-                    <?php 
+                    <?php
                         $promptKey = $uploadedFile['initial_prompt'] ?? array_key_first($promptsData);
                         $visualizadorUrl = $promptsData[$promptKey]['visualizador'] ?? 'visualizador_cfle.php';
                     ?>
                     <form method="POST" action="<?php echo htmlspecialchars($visualizadorUrl); ?>" target="_blank" style="flex: 1; min-width: 200px; margin: 0;">
-                        <input type="hidden" name="json_data" value="<?php echo htmlspecialchars($processingResult); ?>">
+                        <!-- Usamos base64 para evitar problemas de escaping con JSON -->
+                        <input type="hidden" name="json_data" value="<?php echo base64_encode($processingResult); ?>">
                         <button type="submit" class="btn" style="background: #3b82f6; color: white; padding: 0.75rem; border-radius: 0.375rem; text-align: center; width: 100%; border: none; cursor: pointer; font-size: 1rem;">
                             👁️ Visualizar JSON
                         </button>

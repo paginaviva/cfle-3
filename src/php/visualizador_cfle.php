@@ -1,24 +1,27 @@
 ﻿<?php
-// visualizador.php
-// Herramienta temporal para visualizar tablas HTML desde un JSON.
+// visualizador_cfle.php
+// Visualizador de resultados JSON con JSON Editor (vista de árbol)
 
 $resultado = null;
 $error = null;
+$jsonRaw = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jsonInput = $_POST['json_data'] ?? '';
-    
-    // Limpiamos las barras invertidas que a veces añade PHP magic quotes (aunque obsoleto, por si acaso)
-    if (get_magic_quotes_gpc()) {
-        $jsonInput = stripslashes($jsonInput);
-    }
 
     if (!empty($jsonInput)) {
-        $data = json_decode($jsonInput, true);
+        // Decodificar desde base64 (enviado desde carga_pdf.php)
+        $jsonDecoded = base64_decode($jsonInput);
         
+        // Guardar JSON raw para el visualizador
+        $jsonRaw = $jsonDecoded;
+        
+        // Decodificar para validar
+        $data = json_decode($jsonDecoded, true);
+
         if (json_last_error() === JSON_ERROR_NONE) {
             $resultado = [];
-            
+
             // Detectar si tiene clave "Matriz"
             if (isset($data['Matriz']) && is_array($data['Matriz'])) {
                 // Procesar cada elemento de Matriz
@@ -80,7 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador de Tablas JSON</title>
+    <title>Visualizador de Resultados - EnDES</title>
+    <!-- JSON Editor CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.0/jsoneditor.min.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.10.0/jsoneditor.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -91,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             line-height: 1.5;
         }
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
         }
         .card {
@@ -102,30 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 2rem;
         }
         h1, h2 { color: #2563eb; margin-top: 0; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
-        textarea {
-            width: 100%;
-            height: 200px;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            font-family: monospace;
-            font-size: 0.9rem;
-            box-sizing: border-box;
-            margin-bottom: 1rem;
-        }
-        textarea:focus { outline: 2px solid #2563eb; border-color: transparent; }
-        button {
-            background-color: #2563eb;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0.375rem;
-            font-size: 1rem;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        button:hover { background-color: #1d4ed8; }
         .alert-error {
             background-color: #fee2e2;
             color: #991b1b;
@@ -134,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 1rem;
             border: 1px solid #fecaca;
         }
-        
+
         /* Estilos para la tabla renderizada */
         .table-container {
             overflow-x: auto;
@@ -155,57 +137,115 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600;
         }
         tr:nth-child(even) { background-color: #f9fafb; }
+
+        /* Estilos para JSON Editor */
+        .json-editor-container {
+            height: 600px;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+        .jsoneditor {
+            border: none;
+        }
+        .jsoneditor-menu {
+            background-color: #2563eb;
+            border-bottom: 1px solid #1d4ed8;
+        }
+        .jsoneditor-contextmenu .jsoneditor-menu button {
+            color: #1f2937;
+        }
+        .editor-info {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .editor-info strong {
+            color: #2563eb;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="card">
-        <h1>Visualizador de Tablas JSON</h1>
-        <p>Pega tu JSON abajo. Formatos soportados:</p>
-        <ul>
-            <li><code>{"Matriz": [...]}</code> - Convierte todo a tablas</li>
-            <li><code>[{"titulo_tabla": "...", "html_tabla": "..."}]</code> - Array de tablas</li>
-            <li><code>{"titulo_tabla": "...", "html_tabla": "..."}</code> - Una tabla</li>
-        </ul>
-        
-        <form method="POST" action="">
-            <div class="form-group">
-                <label for="json_data">Pegar JSON aquí:</label>
-                <textarea name="json_data" id="json_data" placeholder='{
-    "Matriz": [
-        {
-            "nombre_del_producto": "Producto X",
-            "codigo_referencia": "REF-001",
-            "descripcion_del_producto": "Descripción..."
-        },
-        {
-            "titulo_tabla": "Especificaciones",
-            "html_tabla": "<table>...</table>"
-        }
-    ]
-}' required></textarea>
+        <h1>👁️ Visualizador de Resultados JSON</h1>
+        <p style="color: #6b7280; margin-bottom: 1.5rem;">
+            Visualiza los datos extraídos en formato de árbol interactivo. Puedes expandir/colapsar nodos, buscar y navegar por la estructura.
+        </p>
+
+        <?php if ($error): ?>
+            <div class="alert alert-error">
+                <strong>Error:</strong> <?php echo htmlspecialchars($error); ?>
             </div>
-            <button type="submit">Visualizar Tabla(s)</button>
-        </form>
+        <?php endif; ?>
+
+        <?php if ($jsonRaw): ?>
+            <div class="editor-info">
+                <strong>ℹ️ Información:</strong> 
+                <span id="json-stats">Cargando...</span>
+            </div>
+            
+            <div id="jsoneditor" class="json-editor-container"></div>
+            
+            <script>
+                // Datos JSON (sin escapar - directamente desde POST)
+                const jsonData = <?php echo $jsonRaw; ?>;
+                
+                // Contenedor del editor
+                const container = document.getElementById("jsoneditor");
+                
+                // Opciones del editor
+                const options = {
+                    mode: 'tree',  // Vista de árbol por defecto
+                    modes: ['tree', 'code', 'text'],  // Modos disponibles
+                    onChangeText: function(json) {
+                        // Solo lectura - no permitir cambios
+                        return false;
+                    },
+                    onModeChange: function(newMode, oldMode) {
+                        console.log('Modo cambiado de', oldMode, 'a', newMode);
+                    },
+                    onError: function(err) {
+                        console.error('Error en JSON Editor:', err.toString());
+                    }
+                };
+                
+                // Crear el editor
+                const editor = new JSONEditor(container, options);
+                
+                // Establecer los datos
+                editor.set(jsonData);
+                
+                // Actualizar estadísticas
+                const elementCount = jsonData?.Matriz?.length || 0;
+                const jsonSize = new Blob([JSON.stringify(jsonData)]).size;
+                document.getElementById('json-stats').innerHTML = 
+                    '<strong>' + elementCount + '</strong> elementos en Matriz | ' +
+                    'Tamaño: <strong>' + (jsonSize / 1024).toFixed(2) + ' KB</strong> | ' +
+                    'Modo: <strong>Árbol interactivo</strong> (puedes cambiar a Código)';
+            </script>
+        <?php endif; ?>
     </div>
 
-    <?php if ($error): ?>
-        <div class="alert alert-error">
-            <strong>Error:</strong> <?php echo htmlspecialchars($error); ?>
-        </div>
-    <?php endif; ?>
-
     <?php if ($resultado): ?>
-        <?php foreach ($resultado as $index => $tabla): ?>
-            <div class="card">
-                <h2><?php echo htmlspecialchars($tabla['titulo']); ?></h2>
-                <div class="table-container">
-                    <!-- Se imprime el HTML tal cual (raw) para que se renderice la tabla -->
-                    <?php echo $tabla['html']; ?>
+        <div class="card">
+            <h2>📊 Vista de Tablas HTML</h2>
+            <p style="color: #6b7280; margin-bottom: 1rem;">
+                Las siguientes tablas HTML fueron extraídas del JSON:
+            </p>
+            <?php foreach ($resultado as $index => $tabla): ?>
+                <div style="margin-bottom: 2rem;">
+                    <h3><?php echo htmlspecialchars($tabla['titulo']); ?></h3>
+                    <div class="table-container">
+                        <?php echo $tabla['html']; ?>
+                    </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 </div>
 
