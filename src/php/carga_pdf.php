@@ -320,7 +320,7 @@ include __DIR__ . '/layout_header.php';
                     ?> elementos</strong>.
                 </p>
                 
-                <!-- Referencia visual 1 y 2: Sección de subida de imagen -->
+                <!-- Sección de subida de imagen -->
                 <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; border: 1px solid #bae6fd;">
                     <h4 style="margin: 0 0 0.75rem 0; color: #0369a1; font-size: 0.95rem;">📷 Imagen Asociada</h4>
 
@@ -330,22 +330,28 @@ include __DIR__ . '/layout_header.php';
                             <p style="margin: 0 0 0.75rem 0; color: #166534; font-size: 0.875rem;">
                                 <strong>✓ Imagen subida:</strong> <?php echo htmlspecialchars($imageName); ?>
                             </p>
-                            <!-- Referencia visual 3: Botón deshabilitado (estado completado) -->
+                            <!-- Botón deshabilitado (imagen ya subida) -->
                             <button type="button" class="btn" disabled style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%;">
                                 ✓ Alta producto en Web
                             </button>
                         </div>
                     <?php else: ?>
-                        <!-- Formulario único para subida de imagen -->
-                        <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            <!-- Referencia visual 2: Input de selección de imagen -->
-                            <input type="file" name="image" id="imageUpload" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; font-size: 0.875rem;" required>
+                        <!-- Formulario para subir imagen -->
+                        <form method="POST" enctype="multipart/form-data" id="imageUploadForm">
+                            <!-- Input file oculto -->
+                            <input type="file" name="image" id="imageUpload" accept="image/*" style="display: none;" required>
+                            
+                            <!-- Referencia visual 1: Botón "Subir imagen" -->
+                            <button type="button" id="uploadImageButton" class="btn" style="background: #2563eb; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; font-size: 0.875rem; width: 100%; margin-bottom: 0.75rem;">
+                                📷 Subir imagen
+                            </button>
                             
                             <!-- Referencia visual 4: Botón "Alta producto en Web" debajo -->
-                            <button type="submit" id="submitImageButton" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%; text-align: center;">
+                            <button type="submit" id="submitImageButton" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%;">
                                 🌐 Alta producto en Web
                             </button>
                         </form>
+                        
                         <p style="margin: 0.5rem 0 0 0; color: #6b7280; font-size: 0.75rem;">
                             La imagen se guardará en la misma carpeta que el PDF con el mismo nombre.
                         </p>
@@ -505,12 +511,22 @@ include __DIR__ . '/layout_header.php';
                 }
             </script>
             
-            <!-- Script para habilitación del botón de confirmación de imagen (Referencia visual 2) -->
+            <!-- Script para habilitación del botón de confirmación de imagen -->
             <script>
-                // Habilitar botón "Alta producto en Web" cuando se selecciona archivo
+                // Botón "Subir imagen" abre el input file oculto
+                const uploadImageButton = document.getElementById('uploadImageButton');
                 const imageInput = document.getElementById('imageUpload');
                 const submitButton = document.getElementById('submitImageButton');
+                const imageForm = document.getElementById('imageUploadForm');
                 
+                // Click en "Subir imagen" → abre selector de archivos
+                if (uploadImageButton && imageInput) {
+                    uploadImageButton.addEventListener('click', function() {
+                        imageInput.click();
+                    });
+                }
+                
+                // Cuando se selecciona archivo, habilitar botón "Alta producto en Web"
                 if (imageInput && submitButton) {
                     imageInput.addEventListener('change', function() {
                         if (this.files && this.files[0]) {
