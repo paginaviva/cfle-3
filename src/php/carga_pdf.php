@@ -323,35 +323,29 @@ include __DIR__ . '/layout_header.php';
                 <!-- Referencia visual 1 y 2: Sección de subida de imagen -->
                 <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; border: 1px solid #bae6fd;">
                     <h4 style="margin: 0 0 0.75rem 0; color: #0369a1; font-size: 0.95rem;">📷 Imagen Asociada</h4>
-                    
+
                     <?php if ($imageUploaded): ?>
                         <!-- Imagen ya subida -->
-                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #dcfce7; border-radius: 0.375rem;">
-                            <div style="flex: 1;">
-                                <p style="margin: 0; color: #166534; font-size: 0.875rem;">
-                                    <strong>✓ Imagen subida:</strong> <?php echo htmlspecialchars($imageName); ?>
-                                </p>
-                            </div>
-                            <!-- Referencia visual 2: Botón deshabilitado (estado completado) -->
-                            <button type="button" class="btn" disabled style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem;">
+                        <div style="padding: 0.75rem; background: #dcfce7; border-radius: 0.375rem;">
+                            <p style="margin: 0 0 0.75rem 0; color: #166534; font-size: 0.875rem;">
+                                <strong>✓ Imagen subida:</strong> <?php echo htmlspecialchars($imageName); ?>
+                            </p>
+                            <!-- Referencia visual 3: Botón deshabilitado (estado completado) -->
+                            <button type="button" class="btn" disabled style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%;">
                                 ✓ Alta producto en Web
                             </button>
                         </div>
                     <?php else: ?>
-                        <!-- Referencia visual 1: Botón para subir imagen -->
-                        <div style="display: flex; gap: 0.75rem; align-items: center;">
-                            <form method="POST" enctype="multipart/form-data" style="display: flex; gap: 0.75rem; flex: 1;">
-                                <input type="file" name="image" id="imageUpload" accept="image/*" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; font-size: 0.875rem;" required>
-                                <button type="submit" class="btn" style="background: #2563eb; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; font-size: 0.875rem; white-space: nowrap;">
-                                    📷 Subir imagen
-                                </button>
-                            </form>
+                        <!-- Formulario único para subida de imagen -->
+                        <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <!-- Referencia visual 2: Input de selección de imagen -->
+                            <input type="file" name="image" id="imageUpload" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; font-size: 0.875rem;" required>
                             
-                            <!-- Referencia visual 2: Botón deshabilitado -->
-                            <button type="button" id="confirmImageButton" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; white-space: nowrap;">
+                            <!-- Referencia visual 4: Botón "Alta producto en Web" debajo -->
+                            <button type="submit" id="submitImageButton" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%; text-align: center;">
                                 🌐 Alta producto en Web
                             </button>
-                        </div>
+                        </form>
                         <p style="margin: 0.5rem 0 0 0; color: #6b7280; font-size: 0.75rem;">
                             La imagen se guardará en la misma carpeta que el PDF con el mismo nombre.
                         </p>
@@ -513,26 +507,24 @@ include __DIR__ . '/layout_header.php';
             
             <!-- Script para habilitación del botón de confirmación de imagen (Referencia visual 2) -->
             <script>
-                // Habilitar botón "Alta producto en Web" (Referencia visual 2) cuando se selecciona archivo
+                // Habilitar botón "Alta producto en Web" cuando se selecciona archivo
                 const imageInput = document.getElementById('imageUpload');
-                const confirmButton = document.getElementById('confirmImageButton');
+                const submitButton = document.getElementById('submitImageButton');
                 
-                if (imageInput && confirmButton) {
+                if (imageInput && submitButton) {
                     imageInput.addEventListener('change', function() {
                         if (this.files && this.files[0]) {
                             // Archivo seleccionado - habilitar botón
-                            confirmButton.disabled = false;
-                            confirmButton.style.cursor = 'pointer';
-                            confirmButton.style.background = '#2563eb';
-                            
-                            // Actualizar texto del botón
-                            confirmButton.innerHTML = '⬆️ Alta producto en Web';
+                            submitButton.disabled = false;
+                            submitButton.style.cursor = 'pointer';
+                            submitButton.style.background = '#2563eb';
+                            submitButton.innerHTML = '⬆️ Alta producto en Web';
                         } else {
                             // Sin archivo - deshabilitar botón
-                            confirmButton.disabled = true;
-                            confirmButton.style.cursor = 'not-allowed';
-                            confirmButton.style.background = '#9ca3af';
-                            confirmButton.innerHTML = '🌐 Alta producto en Web';
+                            submitButton.disabled = true;
+                            submitButton.style.cursor = 'not-allowed';
+                            submitButton.style.background = '#9ca3af';
+                            submitButton.innerHTML = '🌐 Alta producto en Web';
                         }
                     });
                 }
