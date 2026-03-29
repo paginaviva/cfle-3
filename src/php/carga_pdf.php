@@ -22,29 +22,36 @@ $imageUploaded = false;
 $imagePath = null;
 $imageName = null;
 
+// Verificar si ya hay imagen subida en sesión (para mantener estado tras recarga)
+if (isset($_SESSION['current_image_path']) && isset($_SESSION['current_pdf_basename'])) {
+    $imageUploaded = true;
+    $imagePath = $_SESSION['current_image_path'];
+    $imageName = $_SESSION['current_image_name'] ?? '';
+}
+
 // --- LÓGICA DE SUBIDA DE IMAGEN ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
     if ($_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $nombreTmp  = $_FILES['image']['tmp_name'];
         $nombreOrig = basename($_FILES['image']['name']);
-        
-        // Obtener nombre base del PDF (desde la sesión o POST)
+
+        // Obtener nombre base del PDF (desde la sesión)
         $pdfNombreBase = $_SESSION['current_pdf_basename'] ?? '';
-        
+
         if (!empty($pdfNombreBase)) {
             // Determinar extensión de la imagen
             $extension = pathinfo($nombreOrig, PATHINFO_EXTENSION);
             $nombreImagen = $pdfNombreBase . '.' . $extension;
-            
+
             // Misma carpeta que el PDF
             $targetDir = DOCS_PATH . '/' . $pdfNombreBase . '/';
-            
+
             if (!is_dir($targetDir)) {
                 mkdir($targetDir, 0775, true);
             }
-            
+
             $rutaDestino = $targetDir . $nombreImagen;
-            
+
             if (move_uploaded_file($nombreTmp, $rutaDestino)) {
                 $imageUploaded = true;
                 $imagePath = $rutaDestino;
@@ -332,7 +339,7 @@ include __DIR__ . '/layout_header.php';
                         </div>
                     <?php else: ?>
                         <!-- Formulario para subir imagen -->
-                        <form method="POST" enctype="multipart/form-data" id="imageUploadForm">
+                        <form method="POST" enctype="multipart/form-data" id="imageUploadForm" action="carga_pdf.php">
                             <!-- Input file VISIBLE -->
                             <input type="file" name="image" id="imageUpload" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; font-size: 0.875rem; margin-bottom: 0.75rem;" required>
                             
@@ -341,8 +348,8 @@ include __DIR__ . '/layout_header.php';
                                 📷 Subir imagen
                             </button>
                             
-                            <!-- Botón "Alta producto en Web" - se habilita tras subir -->
-                            <button type="button" id="altaProductoBtn" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%;">
+                            <!-- Botón "Alta producto en Web" - se habilita cuando imagen está subida -->
+                            <button type="button" id="altaProductoBtn" class="btn" <?php echo $imageUploaded ? '' : 'disabled'; ?> style="background: <?php echo $imageUploaded ? '#2563eb' : '#9ca3af'; ?>; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: <?php echo $imageUploaded ? 'pointer' : 'not-allowed'; ?>; font-size: 0.875rem; width: 100%;">
                                 🌐 Alta producto en Web
                             </button>
                         </form>
