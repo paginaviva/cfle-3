@@ -306,11 +306,6 @@ include __DIR__ . '/layout_header.php';
         <?php if ($processingResult): ?>
             <!-- Step 3: Result Display -->
             <div style="text-align: left; background: white; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
-                <!-- Referencia visual 3: Logo corporativo -->
-                <div style="text-align: center; margin-bottom: 1.5rem;">
-                    <img src="https://srrhhmx.s-ul.eu/P6Za8iMR" alt="Logo Corporativo" style="max-width: 200px; height: auto;">
-                </div>
-                
                 <h3 style="margin-top: 0; color: #059669;">✅ Proceso Completado</h3>
 
                 <p style="color: #374151; margin-bottom: 1rem;">
@@ -338,15 +333,10 @@ include __DIR__ . '/layout_header.php';
                     <?php else: ?>
                         <!-- Formulario para subir imagen -->
                         <form method="POST" enctype="multipart/form-data" id="imageUploadForm">
-                            <!-- Input file oculto -->
-                            <input type="file" name="image" id="imageUpload" accept="image/*" style="display: none;" required>
+                            <!-- Input file visible para selección -->
+                            <input type="file" name="image" id="imageUpload" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; font-size: 0.875rem; margin-bottom: 0.75rem;" required>
                             
-                            <!-- Referencia visual 1: Botón "Subir imagen" -->
-                            <button type="button" id="uploadImageButton" class="btn" style="background: #2563eb; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; font-size: 0.875rem; width: 100%; margin-bottom: 0.75rem;">
-                                📷 Subir imagen
-                            </button>
-                            
-                            <!-- Referencia visual 4: Botón "Alta producto en Web" debajo -->
+                            <!-- Botón "Alta producto en Web" -->
                             <button type="submit" id="submitImageButton" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%;">
                                 🌐 Alta producto en Web
                             </button>
@@ -511,36 +501,21 @@ include __DIR__ . '/layout_header.php';
                 }
             </script>
             
-            <!-- Script para habilitación del botón de confirmación de imagen -->
+            <!-- Habilitar botón al seleccionar archivo -->
             <script>
-                // Botón "Subir imagen" abre el input file oculto
-                const uploadImageButton = document.getElementById('uploadImageButton');
                 const imageInput = document.getElementById('imageUpload');
                 const submitButton = document.getElementById('submitImageButton');
-                const imageForm = document.getElementById('imageUploadForm');
                 
-                // Click en "Subir imagen" → abre selector de archivos
-                if (uploadImageButton && imageInput) {
-                    uploadImageButton.addEventListener('click', function() {
-                        imageInput.click();
-                    });
-                }
-                
-                // Cuando se selecciona archivo, habilitar botón "Alta producto en Web"
                 if (imageInput && submitButton) {
                     imageInput.addEventListener('change', function() {
                         if (this.files && this.files[0]) {
-                            // Archivo seleccionado - habilitar botón
                             submitButton.disabled = false;
                             submitButton.style.cursor = 'pointer';
                             submitButton.style.background = '#2563eb';
-                            submitButton.innerHTML = '⬆️ Alta producto en Web';
                         } else {
-                            // Sin archivo - deshabilitar botón
                             submitButton.disabled = true;
                             submitButton.style.cursor = 'not-allowed';
                             submitButton.style.background = '#9ca3af';
-                            submitButton.innerHTML = '🌐 Alta producto en Web';
                         }
                     });
                 }
