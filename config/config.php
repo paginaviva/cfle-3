@@ -47,6 +47,11 @@ if (!defined('OPENAI_RESPONSES_URL')) define('OPENAI_RESPONSES_URL', 'https://ap
 if (!defined('OPENAI_FILES_URL')) define('OPENAI_FILES_URL', 'https://api.openai.com/v1/files');
 if (!defined('OPENAI_THREADS_URL')) define('OPENAI_THREADS_URL', 'https://api.openai.com/v1/threads');
 
+// Modo Demo/Pruebas
+// true = Ejecutar OpenAI normalmente (producción)
+// false = Saltar OpenAI, mostrar resultados mock (ahorro de tokens/dinero)
+if (!defined('OPENAI_ENABLED')) define('OPENAI_ENABLED', true);
+
 // Upload Configuration
 if (!defined('UPLOAD_DIR')) define('UPLOAD_DIR', DOCS_PATH . '/');
 

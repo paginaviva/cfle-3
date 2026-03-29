@@ -143,14 +143,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filepath']) && !isset
         $log("Iniciando proceso para: " . $uploadedFile['name']);
         $log("Prompt seleccionado: " . ($uploadedFile['initial_prompt'] ?? 'None'));
 
-        try {
-            // Instanciar Cliente OpenAI
-            require_once __DIR__ . '/../OpenAIClient.php';
-            $client = new OpenAIClient($config['openai_api_key'] ?? OPENAI_API_KEY);
+        // Verificar si OpenAI está habilitado
+        $openaiEnabled = defined('OPENAI_ENABLED') ? OPENAI_ENABLED : true;
 
-            // Subir archivo a OpenAI
-            $log("Subiendo archivo a OpenAI...");
-            $uploadResult = $client->uploadFile($realFilePath, 'user_data');
+        if ($openaiEnabled) {
+            // MODO PRODUCCIÓN: Ejecutar llamada a OpenAI
+            try {
+                // Instanciar Cliente OpenAI
+                require_once __DIR__ . '/../OpenAIClient.php';
+                $client = new OpenAIClient($config['openai_api_key'] ?? OPENAI_API_KEY);
+
+                // Subir archivo a OpenAI
+                $log("Subiendo archivo a OpenAI...");
+                $uploadResult = $client->uploadFile($realFilePath, 'user_data');
             
             if (!isset($uploadResult['id'])) {
                 throw new \RuntimeException("La respuesta de OpenAI no contiene un ID de archivo.");
@@ -289,6 +294,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filepath']) && !isset
             $error = "Error en el proceso: " . $e->getMessage();
             $log("ERROR: " . $e->getMessage());
         }
+        } else {
+            // MODO DEMO: OpenAI deshabilitado - Usar resultado mock
+            $log("MODO DEMO: OpenAI deshabilitado, usando resultado mock");
+            
+            // JSON mock de ejemplo para pruebas sin gastar tokens
+            $mockData = [
+                'Matriz' => [
+                    [
+                        'nombre_del_producto' => 'Producto Demo',
+                        'codigo_referencia' => 'DEMO-001',
+                        'clasificacion_sistema' => 'SISTEMA DEMO',
+                        'categoria_producto' => 'Producto de prueba',
+                        'descripcion_del_producto' => 'Este es un resultado de prueba para modo demo. No se ha llamado a OpenAI para ahorrar tokens.',
+                        'idiomas_detectados' => 'es',
+                        'lista_caracteristicas' => '- Característica 1<br>- Característica 2<br>- Característica 3'
+                    ],
+                    [
+                        'titulo_tabla' => 'Tabla Demo',
+                        'html_tabla' => '<table><tr><th>Columna 1</th><th>Columna 2</th></tr><tr><td>Dato 1</td><td>Dato 2</td></tr></table>'
+                    ]
+                ]
+            ];
+            
+            $processingResult = json_encode($mockData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            $log("MODO DEMO: Resultado mock generado");
+        }
 
     } else {
         $error = "Archivo no válido o no encontrado.";
@@ -313,6 +344,13 @@ include __DIR__ . '/layout_header.php';
         <?php if ($processingResult): ?>
             <!-- Step 3: Result Display -->
             <div style="text-align: left; background: white; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                <!-- Banner MODO DEMO -->
+                <?php if (!$openaiEnabled): ?>
+                    <div style="background: #fef3c7; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1rem; border: 1px solid #f59e0b;">
+                        <strong>⚠️ MODO DEMO:</strong> OpenAI deshabilitado. Mostrando resultados de prueba. No se han gastado tokens.
+                    </div>
+                <?php endif; ?>
+                
                 <h3 style="margin-top: 0; color: #059669;">✅ Proceso Completado</h3>
 
                 <p style="color: #374151; margin-bottom: 1rem;">
