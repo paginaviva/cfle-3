@@ -331,18 +331,18 @@ include __DIR__ . '/layout_header.php';
                             </button>
                         </div>
                     <?php else: ?>
-                        <!-- Input file oculto -->
-                        <input type="file" name="image" id="imageUpload" accept="image/*" style="display: none;" required>
-                        
                         <!-- Formulario para subir imagen -->
                         <form method="POST" enctype="multipart/form-data" id="imageUploadForm">
-                            <!-- Botón "Subir imagen" -->
-                            <button type="button" id="uploadImageButton" class="btn" style="background: #2563eb; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; font-size: 0.875rem; width: 100%; margin-bottom: 0.75rem;">
+                            <!-- Input file VISIBLE -->
+                            <input type="file" name="image" id="imageUpload" accept="image/*" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; font-size: 0.875rem; margin-bottom: 0.75rem;" required>
+                            
+                            <!-- Botón "Subir imagen" - SUBE la imagen -->
+                            <button type="submit" class="btn" style="background: #2563eb; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; font-size: 0.875rem; width: 100%; margin-bottom: 0.75rem;">
                                 📷 Subir imagen
                             </button>
                             
-                            <!-- Botón "Alta producto en Web" -->
-                            <button type="submit" id="submitImageButton" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%;">
+                            <!-- Botón "Alta producto en Web" - se habilita tras subir -->
+                            <button type="button" id="altaProductoBtn" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%;">
                                 🌐 Alta producto en Web
                             </button>
                         </form>
@@ -503,35 +503,6 @@ include __DIR__ . '/layout_header.php';
                 // Render inicial
                 if (selectedPromptKey) {
                     renderParameters(selectedPromptKey);
-                }
-            </script>
-            
-            <!-- Script para botones de imagen -->
-            <script>
-                const uploadImageButton = document.getElementById('uploadImageButton');
-                const imageInput = document.getElementById('imageUpload');
-                const submitButton = document.getElementById('submitImageButton');
-                
-                // Botón "Subir imagen" abre el input file
-                if (uploadImageButton && imageInput) {
-                    uploadImageButton.addEventListener('click', function() {
-                        imageInput.click();
-                    });
-                }
-                
-                // Al seleccionar archivo, habilitar botón "Alta producto en Web"
-                if (imageInput && submitButton) {
-                    imageInput.addEventListener('change', function() {
-                        if (this.files && this.files[0]) {
-                            submitButton.disabled = false;
-                            submitButton.style.cursor = 'pointer';
-                            submitButton.style.background = '#2563eb';
-                        } else {
-                            submitButton.disabled = true;
-                            submitButton.style.cursor = 'not-allowed';
-                            submitButton.style.background = '#9ca3af';
-                        }
-                    });
                 }
             </script>
 
