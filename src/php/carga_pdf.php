@@ -334,7 +334,7 @@ include __DIR__ . '/layout_header.php';
                             </div>
                             <!-- Referencia visual 2: Botón deshabilitado (estado completado) -->
                             <button type="button" class="btn" disabled style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem;">
-                                ✓ Subir imagen
+                                ✓ Alta producto en Web
                             </button>
                         </div>
                     <?php else: ?>
@@ -349,7 +349,7 @@ include __DIR__ . '/layout_header.php';
                             
                             <!-- Referencia visual 2: Botón deshabilitado -->
                             <button type="button" id="confirmImageButton" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; white-space: nowrap;">
-                                📷 Subir imagen
+                                🌐 Alta producto en Web
                             </button>
                         </div>
                         <p style="margin: 0.5rem 0 0 0; color: #6b7280; font-size: 0.75rem;">
@@ -513,7 +513,7 @@ include __DIR__ . '/layout_header.php';
             
             <!-- Script para habilitación del botón de confirmación de imagen (Referencia visual 2) -->
             <script>
-                // Habilitar botón "Subir imagen" (Referencia visual 2) cuando se selecciona archivo
+                // Habilitar botón "Alta producto en Web" (Referencia visual 2) cuando se selecciona archivo
                 const imageInput = document.getElementById('imageUpload');
                 const confirmButton = document.getElementById('confirmImageButton');
                 
@@ -526,13 +526,13 @@ include __DIR__ . '/layout_header.php';
                             confirmButton.style.background = '#2563eb';
                             
                             // Actualizar texto del botón
-                            confirmButton.innerHTML = '⬆️ Confirmar subida';
+                            confirmButton.innerHTML = '⬆️ Alta producto en Web';
                         } else {
                             // Sin archivo - deshabilitar botón
                             confirmButton.disabled = true;
                             confirmButton.style.cursor = 'not-allowed';
                             confirmButton.style.background = '#9ca3af';
-                            confirmButton.innerHTML = '📷 Subir imagen';
+                            confirmButton.innerHTML = '🌐 Alta producto en Web';
                         }
                     });
                 }
