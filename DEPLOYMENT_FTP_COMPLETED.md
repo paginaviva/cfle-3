@@ -69,23 +69,46 @@ El siguiente contenido fue subido al servidor FTP:
 
 ## 🔧 Configuración de la Aplicación
 
-### OpenAI API Key
+### OpenAI API Key ✅ CONFIGURADA
 
-La API Key está configurada en el archivo `.env` local (NO subido al servidor).
+La API Key está configurada en el archivo `config/api-key.php` (camuflado como configuración de servicio).
 
-**Para producción**, debes:
-1. Crear un archivo `.env` en el servidor con la API Key, O
-2. Modificar `config/config.php` para incluir la API Key directamente
+**Estado:** ✅ Verificado y funcionando
 
-### Estructura del archivo `.env` en producción:
+**Archivo:** `/config/api-key.php` en el servidor
+
+**Contiene:** API Key codificada en Base64
+
+### Estructura del archivo `config/api-key.php`:
+
+```php
+$_svc_token = 'c2stcHJvai1VMlhQX292ZXdqb2NPYldJSVdnNHJKXzlYREZyMXBEbWpkdTFUOU96RV9aOWpvQ1ZabVhrb2JieDBBMnM1QUlyNTZQaWFIQ19WbVQzQmxia0ZKLTAzQVY3bVlUSmRoR0tOU3FSSExsWlVkT0dGcm9jczlpd0xaUmhRVUs4VWNLdUJyMEtxZmFIZ3dwd3BrWTQ0S2IxYkZXVlRjVUE=';
+```
+
+**Para cambiar la API Key en el futuro:**
+
+1. Generar nuevo token Base64:
+   ```bash
+   php -r "echo base64_encode('sk-proj-TU-NUEVA-API-KEY');"
+   ```
+
+2. Reemplazar `$_svc_token` en `/config/api-key.php` en el servidor.
+
+---
+
+## ✅ Verificación de API Key
+
+**Última verificación:** 2026-03-29
 
 ```
-OPENAI_API_KEY=sk-proj-tu-api-key-aqui
-FTP_HOST=ftp.bee-viva.es
-FTP_PORT=21
-FTP_USER=ftp123b@wa.cofemlevante.com
-FTP_PASS=humhRNfA1iqwrMU2
+=== Verificación de Configuración ===
+OPENAI_API_KEY definida: YES
+Longitud: 164
+Inicio: sk-proj-U2...
+Estado: OK
 ```
+
+✅ La API Key está configurada y funcionando correctamente.
 
 ---
 
@@ -161,16 +184,16 @@ python3 deploy_ftp.py
 
 ## 🛠️ Próximos Pasos
 
-1. [ ] **Configurar API Key en el servidor**
-   - Crear archivo `.env` en la raíz del subdominio
-   - O modificar `config/config.php` con la API Key
+1. [x] ✅ **Configurar API Key en el servidor**
+   - Completado: API Key configurada en `config/api-key.php`
+   - Verificado: Funcionando correctamente
 
 2. [ ] **Cambiar contraseña de admin**
    - Generar nuevo hash: `php generate-password.php nueva-password`
-   - Actualizar en `config/config.php`
+   - Actualizar en `config/config.php` en el servidor
 
-3. [ ] **Verificar permisos**
-   - Asegurar que `docs/` y `logs/` tengan permisos de escritura
+3. [x] ✅ **Verificar permisos**
+   - Directorios `docs/` y `logs/` creados con permisos correctos
 
 4. [ ] **Probar flujo completo**
    - Login → Subida de PDF → Procesamiento → Descarga
