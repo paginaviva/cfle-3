@@ -1,0 +1,44 @@
+# EnDES - Git Ignore
+
+# Variables de entorno (CONTIENEN CREDENCIALES - NUNCA COMMITEAR)
+.env
+.env.local
+.env.*.local
+
+# Directorios de almacenamiento (se generan en runtime)
+docs/
+logs/
+
+# Archivos generados durante el procesamiento
+*.result.json
+*.file_id
+*.log
+
+# IDE y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs de aplicación (pueden contener datos sensibles)
+*.log
+logs/
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+
+# Composer (si se añade en el futuro)
+vendor/
+composer.lock
+
+# Node modules (si se añade en el futuro)
+node_modules/
+package-lock.json
+yarn.lock
