@@ -17,23 +17,68 @@ $processingResult = null;
 $promptsConfig = require __DIR__ . '/../../config/prompts.php';
 $promptsData = $promptsConfig['prompts'] ?? [];
 
+// Variables para manejo de imagen asociada
+$imageUploaded = false;
+$imagePath = null;
+$imageName = null;
+
+// --- LÓGICA DE SUBIDA DE IMAGEN ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
+    if ($_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $nombreTmp  = $_FILES['image']['tmp_name'];
+        $nombreOrig = basename($_FILES['image']['name']);
+        
+        // Obtener nombre base del PDF (desde la sesión o POST)
+        $pdfNombreBase = $_SESSION['current_pdf_basename'] ?? '';
+        
+        if (!empty($pdfNombreBase)) {
+            // Determinar extensión de la imagen
+            $extension = pathinfo($nombreOrig, PATHINFO_EXTENSION);
+            $nombreImagen = $pdfNombreBase . '.' . $extension;
+            
+            // Misma carpeta que el PDF
+            $targetDir = DOCS_PATH . '/' . $pdfNombreBase . '/';
+            
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0775, true);
+            }
+            
+            $rutaDestino = $targetDir . $nombreImagen;
+            
+            if (move_uploaded_file($nombreTmp, $rutaDestino)) {
+                $imageUploaded = true;
+                $imagePath = $rutaDestino;
+                $imageName = $nombreImagen;
+                $_SESSION['current_image_path'] = $imagePath;
+                $_SESSION['current_image_name'] = $imageName;
+            } else {
+                $error = "Error al guardar la imagen.";
+            }
+        } else {
+            $error = "No se ha identificado el PDF asociado.";
+        }
+    } else {
+        $error = "Error en la subida de imagen: " . $_FILES['image']['error'];
+    }
+}
+
 // --- LÓGICA DE SUBIDA (Paso 1) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdf'])) {
     if ($_FILES['pdf']['error'] === UPLOAD_ERR_OK) {
-        
+
         $nombreTmp  = $_FILES['pdf']['tmp_name'];
         $nombreOrig = basename($_FILES['pdf']['name']);
-        
+
         // Crear carpeta basada en el nombre del archivo (sin extensión)
         $nombreCarpeta = pathinfo($nombreOrig, PATHINFO_FILENAME);
         $nombreCarpeta = preg_replace('/[^a-zA-Z0-9._-]/', '_', $nombreCarpeta);
-        
+
         $targetDir = DOCS_PATH . '/' . $nombreCarpeta . '/';
-        
+
         if (!is_dir($targetDir)) {
             mkdir($targetDir, 0775, true);
         }
-        
+
         $rutaDestino = $targetDir . $nombreOrig;
 
         if (move_uploaded_file($nombreTmp, $rutaDestino)) {
@@ -42,6 +87,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdf'])) {
                 'name' => $nombreOrig,
                 'initial_prompt' => $_POST['initial_prompt'] ?? null
             ];
+            // Guardar nombre base en sesión para asociación con imagen
+            $_SESSION['current_pdf_basename'] = $nombreCarpeta;
+            
+            // Verificar si ya existe imagen asociada
+            $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            foreach ($imageExtensions as $ext) {
+                $possibleImagePath = $targetDir . $nombreCarpeta . '.' . $ext;
+                if (file_exists($possibleImagePath)) {
+                    $imageUploaded = true;
+                    $imagePath = $possibleImagePath;
+                    $imageName = basename($possibleImagePath);
+                    $_SESSION['current_image_path'] = $imagePath;
+                    $_SESSION['current_image_name'] = $imageName;
+                    break;
+                }
+            }
         } else {
             $error = "Error al guardar el archivo.";
         }
@@ -245,14 +306,57 @@ include __DIR__ . '/layout_header.php';
         <?php if ($processingResult): ?>
             <!-- Step 3: Result Display -->
             <div style="text-align: left; background: white; padding: 1.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
-                <h3 style="margin-top: 0; color: #059669;">✅ Proceso Completado</h3>
+                <!-- Referencia visual 3: Logo corporativo -->
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <img src="https://srrhhmx.s-ul.eu/P6Za8iMR" alt="Logo Corporativo" style="max-width: 200px; height: auto;">
+                </div>
                 
+                <h3 style="margin-top: 0; color: #059669;">✅ Proceso Completado</h3>
+
                 <p style="color: #374151; margin-bottom: 1rem;">
-                    El análisis se ha completado correctamente. Se han extraído <strong><?php 
+                    El análisis se ha completado correctamente. Se han extraído <strong><?php
                         $data = json_decode($processingResult, true);
                         echo count($data['Matriz'] ?? []);
                     ?> elementos</strong>.
                 </p>
+                
+                <!-- Referencia visual 1 y 2: Sección de subida de imagen -->
+                <div style="background: #f0f9ff; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem; border: 1px solid #bae6fd;">
+                    <h4 style="margin: 0 0 0.75rem 0; color: #0369a1; font-size: 0.95rem;">📷 Imagen Asociada</h4>
+                    
+                    <?php if ($imageUploaded): ?>
+                        <!-- Imagen ya subida -->
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: #dcfce7; border-radius: 0.375rem;">
+                            <div style="flex: 1;">
+                                <p style="margin: 0; color: #166534; font-size: 0.875rem;">
+                                    <strong>✓ Imagen subida:</strong> <?php echo htmlspecialchars($imageName); ?>
+                                </p>
+                            </div>
+                            <!-- Referencia visual 2: Botón deshabilitado (estado completado) -->
+                            <button type="button" class="btn" disabled style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem;">
+                                ✓ Subir imagen
+                            </button>
+                        </div>
+                    <?php else: ?>
+                        <!-- Referencia visual 1: Botón para subir imagen -->
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <form method="POST" enctype="multipart/form-data" style="display: flex; gap: 0.75rem; flex: 1;">
+                                <input type="file" name="image" id="imageUpload" accept="image/*" style="flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; font-size: 0.875rem;" required>
+                                <button type="submit" class="btn" style="background: #2563eb; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; font-size: 0.875rem; white-space: nowrap;">
+                                    📷 Subir imagen
+                                </button>
+                            </form>
+                            
+                            <!-- Referencia visual 2: Botón deshabilitado -->
+                            <button type="button" id="confirmImageButton" class="btn" disabled style="background: #9ca3af; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; white-space: nowrap;">
+                                📷 Subir imagen
+                            </button>
+                        </div>
+                        <p style="margin: 0.5rem 0 0 0; color: #6b7280; font-size: 0.75rem;">
+                            La imagen se guardará en la misma carpeta que el PDF con el mismo nombre.
+                        </p>
+                    <?php endif; ?>
+                </div>
 
                 <div style="margin-bottom: 1.5rem;">
                     <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Vista Previa del JSON:</label>
@@ -404,6 +508,33 @@ include __DIR__ . '/layout_header.php';
                 // Render inicial
                 if (selectedPromptKey) {
                     renderParameters(selectedPromptKey);
+                }
+            </script>
+            
+            <!-- Script para habilitación del botón de confirmación de imagen (Referencia visual 2) -->
+            <script>
+                // Habilitar botón "Subir imagen" (Referencia visual 2) cuando se selecciona archivo
+                const imageInput = document.getElementById('imageUpload');
+                const confirmButton = document.getElementById('confirmImageButton');
+                
+                if (imageInput && confirmButton) {
+                    imageInput.addEventListener('change', function() {
+                        if (this.files && this.files[0]) {
+                            // Archivo seleccionado - habilitar botón
+                            confirmButton.disabled = false;
+                            confirmButton.style.cursor = 'pointer';
+                            confirmButton.style.background = '#2563eb';
+                            
+                            // Actualizar texto del botón
+                            confirmButton.innerHTML = '⬆️ Confirmar subida';
+                        } else {
+                            // Sin archivo - deshabilitar botón
+                            confirmButton.disabled = true;
+                            confirmButton.style.cursor = 'not-allowed';
+                            confirmButton.style.background = '#9ca3af';
+                            confirmButton.innerHTML = '📷 Subir imagen';
+                        }
+                    });
                 }
             </script>
 

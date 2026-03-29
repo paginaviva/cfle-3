@@ -15,9 +15,8 @@ if (!defined('APP_TITLE')) {
 <body>
     <header class="app-header">
         <div class="header-left">
-            <div class="app-logo-container">
-                <span style="font-size: 24px;">??</span>
-            </div>
+            <!-- Logo corporativo (Referencia visual 3) -->
+            <img src="https://srrhhmx.s-ul.eu/P6Za8iMR" alt="Logo" style="height: 40px; width: auto;">
             <h1 class="app-title"><?php echo APP_TITLE; ?></h1>
         </div>
         <div class="header-right">
