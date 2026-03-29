@@ -1,6 +1,9 @@
 <?php
 // config/config.php
 
+// Cargar configuración de API Key (archivo camuflado)
+require_once __DIR__ . '/api-key.php';
+
 // Definir rutas base
 if (!defined('BASE_PATH')) define('BASE_PATH', dirname(__DIR__));
 if (!defined('DOCS_PATH')) define('DOCS_PATH', BASE_PATH . '/docs');
@@ -11,8 +14,8 @@ if (!defined('APP_TITLE')) define('APP_TITLE', 'Gestor de Fichas Tecnicas');
 if (!defined('APP_VERSION')) define('APP_VERSION', '1.0.0');
 
 // OpenAI Configuration
-// La API Key se carga desde el archivo .env o variable de entorno
-if (!defined('OPENAI_API_KEY')) {
+// La API Key se carga desde api-key.php, .env o variable de entorno
+if (!defined('OPENAI_API_KEY') || empty(OPENAI_API_KEY)) {
     // Intentar cargar desde archivo .env si existe
     $envFile = __DIR__ . '/../.env';
     if (file_exists($envFile)) {
