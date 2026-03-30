@@ -58,6 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
                 $imageName = $nombreImagen;
                 $_SESSION['current_image_path'] = $imagePath;
                 $_SESSION['current_image_name'] = $imageName;
+                
+                // ✅ Redireccionar para mantener estado y recargar página
+                header('Location: carga_pdf.php');
+                exit;
             } else {
                 $error = "Error al guardar la imagen.";
             }
