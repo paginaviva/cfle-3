@@ -389,8 +389,8 @@ include __DIR__ . '/layout_header.php';
                             <p style="margin: 0 0 0.75rem 0; color: #166534; font-size: 0.875rem;">
                                 <strong>✓ Imagen subida:</strong> <?php echo htmlspecialchars($imageName); ?>
                             </p>
-                            <!-- Botón deshabilitado (imagen ya subida) -->
-                            <button type="button" class="btn" disabled style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: not-allowed; font-size: 0.875rem; width: 100%;">
+                            <!-- Botón HABILITADO (imagen ya subida) -->
+                            <button type="button" class="btn" style="background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; width: 100%;">
                                 ✓ Alta producto en Web
                             </button>
                         </div>
