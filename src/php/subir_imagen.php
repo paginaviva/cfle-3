@@ -119,6 +119,7 @@ include __DIR__ . '/layout_header.php';
             <!-- Botón "Alta producto en Web" -->
             <button 
                 type="button" 
+                id="altaProductoBtn"
                 class="btn" 
                 <?php echo $imageUploaded ? '' : 'disabled'; ?>
                 style="background: <?php echo $imageUploaded ? '#10b981' : '#9ca3af'; ?>; 
@@ -134,6 +135,32 @@ include __DIR__ . '/layout_header.php';
             </button>
         </form>
         
+        <!-- Modal de Aviso - Solo visible cuando imagen está subida -->
+        <div id="avisoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="background: white; border-radius: 0.5rem; max-width: 400px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                <!-- Header rojo con aviso -->
+                <div style="background: #dc2626; padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">⚠️</div>
+                    <h3 style="color: white; margin: 0; font-size: 1.5rem; font-weight: 700;">¡AVISO!</h3>
+                </div>
+                
+                <!-- Cuerpo del mensaje -->
+                <div style="padding: 1.5rem;">
+                    <p style="margin: 0 0 1.5rem 0; color: #374151; line-height: 1.6;">
+                        <strong style="font-size: 1.1rem; display: block; margin-bottom: 0.75rem;">Sincronización pendiente en WooCommerce.</strong>
+                        Debes sincronizar las claves primarias y los metafields antes de continuar para evitar errores en los datos.
+                    </p>
+                    
+                    <!-- Botón Cancelar -->
+                    <div style="text-align: center;">
+                        <button id="cancelarBtn" type="button" style="background: #dc2626; color: white; padding: 0.75rem 2rem; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 1rem; font-weight: 600;">
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
             <a href="carga_pdf.php" class="btn" style="background: #6b7280; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; display: block; text-align: center;">
                 ← Volver a Resultados
@@ -141,5 +168,38 @@ include __DIR__ . '/layout_header.php';
         </div>
     </div>
 </div>
+
+<!-- Scripts para el modal -->
+<script>
+    // Abrir modal al hacer click en "Alta producto en Web"
+    const altaProductoBtn = document.getElementById('altaProductoBtn');
+    const avisoModal = document.getElementById('avisoModal');
+    const cancelarBtn = document.getElementById('cancelarBtn');
+    
+    if (altaProductoBtn && avisoModal) {
+        altaProductoBtn.addEventListener('click', function() {
+            // Solo abrir si el botón está habilitado (imagen subida)
+            if (!this.disabled) {
+                avisoModal.style.display = 'flex';
+            }
+        });
+    }
+    
+    // Cerrar modal con botón Cancelar
+    if (cancelarBtn && avisoModal) {
+        cancelarBtn.addEventListener('click', function() {
+            avisoModal.style.display = 'none';
+        });
+    }
+    
+    // Cerrar modal al hacer click fuera
+    if (avisoModal) {
+        avisoModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    }
+</script>
 
 <?php include __DIR__ . '/layout_footer.php'; ?>
