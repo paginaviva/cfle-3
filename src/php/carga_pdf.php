@@ -401,13 +401,13 @@ include __DIR__ . '/layout_header.php';
                 </div>
 
                 <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                    <a href="data:application/json;charset=utf-8,<?php echo rawurlencode($processingResult); ?>" 
+                    <a href="data:application/json;charset=utf-8,<?php echo rawurlencode($processingResult); ?>"
                        download="resultado_<?php echo date('YmdHis'); ?>.json"
-                       class="btn btn-primary" 
+                       class="btn btn-primary"
                        style="flex: 1; padding: 0.75rem; text-decoration: none; text-align: center; min-width: 200px;">
                         📥 Descargar JSON Completo
                     </a>
-                    
+
                     <?php
                         $promptKey = $uploadedFile['initial_prompt'] ?? array_key_first($promptsData);
                         $visualizadorUrl = $promptsData[$promptKey]['visualizador'] ?? 'visualizador_cfle.php';
@@ -421,6 +421,15 @@ include __DIR__ . '/layout_header.php';
                     </form>
                 </div>
                 
+                <!-- Botón Continuar -->
+                <div style="margin-top: 1rem;">
+                    <a href="subir_imagen.php"
+                       class="btn"
+                       style="background: #fb923c; color: white; text-decoration: none; padding: 0.75rem; border-radius: 0.375rem; text-align: center; display: block; width: 100%; font-weight: 600;">
+                        ➡️ Continuar
+                    </a>
+                </div>
+
                 <div style="margin-top: 1rem;">
                     <a href="carga_pdf.php?nuevo=1"
                        class="btn"
