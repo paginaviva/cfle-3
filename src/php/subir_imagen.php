@@ -83,38 +83,56 @@ include __DIR__ . '/layout_header.php';
             </div>
         <?php endif; ?>
         
-        <?php if ($imageUploaded): ?>
-            <!-- Imagen ya subida -->
-            <div style="background: #dcfce7; padding: 1.5rem; border-radius: 0.375rem; text-align: center;">
-                <p style="color: #166534; font-size: 1.1rem; margin-bottom: 1rem;">
-                    <strong>✓ Imagen subida:</strong> <?php echo htmlspecialchars($imageName); ?>
-                </p>
-                <a href="carga_pdf.php" class="btn" style="background: #10b981; color: white; padding: 0.75rem 1.5rem; border-radius: 0.375rem; text-decoration: none; display: inline-block;">
-                    ← Volver a Resultados
-                </a>
+        <!-- Formulario de subida -->
+        <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div>
+                <label for="image" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
+                    Seleccionar Imagen
+                </label>
+                <input 
+                    type="file" 
+                    name="image" 
+                    id="image" 
+                    accept="image/*" 
+                    <?php echo $imageUploaded ? 'disabled' : ''; ?>
+                    style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; font-size: 0.875rem;"
+                >
             </div>
-        <?php else: ?>
-            <!-- Formulario de subida -->
-            <form method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1rem;">
-                <div>
-                    <label for="image" style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-                        Seleccionar Imagen
-                    </label>
-                    <input 
-                        type="file" 
-                        name="image" 
-                        id="image" 
-                        accept="image/*" 
-                        required
-                        style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; background: white; font-size: 0.875rem;"
-                    >
-                </div>
-                
-                <button type="submit" class="btn" style="background: #2563eb; color: white; padding: 0.75rem; border-radius: 0.375rem; border: none; cursor: pointer; font-size: 1rem; font-weight: 600;">
-                    📷 Subir Imagen
-                </button>
-            </form>
-        <?php endif; ?>
+            
+            <!-- Botón "Subir Imagen" -->
+            <button 
+                type="submit" 
+                class="btn" 
+                <?php echo $imageUploaded ? 'disabled' : ''; ?>
+                style="background: <?php echo $imageUploaded ? '#9ca3af' : '#2563eb'; ?>; 
+                       color: white; 
+                       padding: 0.75rem; 
+                       border-radius: 0.375rem; 
+                       border: none; 
+                       cursor: <?php echo $imageUploaded ? 'not-allowed' : 'pointer'; ?>; 
+                       font-size: 1rem; 
+                       font-weight: 600;"
+            >
+                📷 Subir Imagen
+            </button>
+            
+            <!-- Botón "Alta producto en Web" -->
+            <button 
+                type="button" 
+                class="btn" 
+                <?php echo $imageUploaded ? '' : 'disabled'; ?>
+                style="background: <?php echo $imageUploaded ? '#10b981' : '#9ca3af'; ?>; 
+                       color: white; 
+                       padding: 0.75rem; 
+                       border-radius: 0.375rem; 
+                       border: none; 
+                       cursor: <?php echo $imageUploaded ? 'pointer' : 'not-allowed'; ?>; 
+                       font-size: 1rem; 
+                       font-weight: 600;"
+            >
+                <?php echo $imageUploaded ? '✓ ' : '🌐 '; ?>Alta producto en Web
+            </button>
+        </form>
         
         <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
             <a href="carga_pdf.php" class="btn" style="background: #6b7280; color: white; padding: 0.75rem; border-radius: 0.375rem; text-decoration: none; display: block; text-align: center;">
