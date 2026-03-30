@@ -23,6 +23,7 @@ $imagePath = null;
 $imageName = null;
 
 // Verificar si ya hay imagen subida en sesión (para mantener estado tras recarga)
+// NOTA: Esto solo aplica si viene de subir imagen en MISMA sesión de resultados
 if (isset($_SESSION['current_image_path']) && isset($_SESSION['current_pdf_basename'])) {
     $imageUploaded = true;
     $imagePath = $_SESSION['current_image_path'];
@@ -100,6 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdf'])) {
             ];
             // Guardar nombre base en sesión para asociación con imagen
             $_SESSION['current_pdf_basename'] = $nombreCarpeta;
+            
+            // ✅ LIMPIAR imagen anterior de sesión (nuevo PDF = nueva imagen)
+            unset($_SESSION['current_image_path']);
+            unset($_SESSION['current_image_name']);
+            $imageUploaded = false;  // Resetear para este PDF
             
             // Verificar si ya existe imagen asociada
             $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
