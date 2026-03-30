@@ -9,6 +9,20 @@ $auth = new AuthService($config);
 // Proteger ruta
 $auth->requireLogin();
 
+// Verificar si es un nuevo proceso (limpiar sesión)
+if (isset($_GET['nuevo']) && $_GET['nuevo'] == '1') {
+    // Limpiar variables de sesión de proceso anterior
+    unset($_SESSION['current_pdf_basename']);
+    unset($_SESSION['current_image_path']);
+    unset($_SESSION['current_image_name']);
+    unset($_SESSION['last_processing_result']);
+    unset($_SESSION['current_file_id']);
+    
+    // Redirigir para limpiar URL
+    header('Location: carga_pdf.php');
+    exit;
+}
+
 $uploadedFile = null;
 $error = null;
 $processingResult = null;
@@ -408,8 +422,8 @@ include __DIR__ . '/layout_header.php';
                 </div>
                 
                 <div style="margin-top: 1rem;">
-                    <a href="carga_pdf.php" 
-                       class="btn" 
+                    <a href="carga_pdf.php?nuevo=1"
+                       class="btn"
                        style="background: #10b981; color: white; text-decoration: none; padding: 0.75rem; border-radius: 0.375rem; text-align: center; display: block; width: 100%;">
                         🔄 Procesar Otro Archivo
                     </a>

@@ -22,7 +22,7 @@ if (!defined('APP_TITLE')) {
         <div class="header-right">
             <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
                 <span style="margin-right: 1rem; align-self: center;">Hola, <?php echo htmlspecialchars($_SESSION['user'] ?? ''); ?></span>
-                <a href="carga_pdf.php" class="btn btn-primary">Nuevo Proceso</a>
+                <a href="carga_pdf.php?nuevo=1" class="btn btn-primary">Nuevo Proceso</a>
                 <a href="logout.php" class="btn btn-outline">Cerrar Sesión</a>
             <?php endif; ?>
         </div>
