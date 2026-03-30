@@ -30,6 +30,11 @@ if (isset($_SESSION['current_image_path']) && isset($_SESSION['current_pdf_basen
     $imageName = $_SESSION['current_image_name'] ?? '';
 }
 
+// Leer resultado de procesamiento desde sesión (para mantener estado tras recarga)
+if (isset($_SESSION['last_processing_result'])) {
+    $processingResult = $_SESSION['last_processing_result'];
+}
+
 // --- LÓGICA DE SUBIDA DE IMAGEN ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['image'])) {
     if ($_FILES['image']['error'] === UPLOAD_ERR_OK) {
@@ -298,6 +303,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filepath']) && !isset
             $log("Resultado guardado en: " . basename($resultFile));
 
             $processingResult = $jsonOutput;
+            // ✅ Guardar en sesión para mantener estado tras recarga
+            $_SESSION['last_processing_result'] = $processingResult;
             $log("Proceso finalizado con éxito.");
 
         } catch (\Exception $e) {
@@ -307,7 +314,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filepath']) && !isset
         } else {
             // MODO DEMO: OpenAI deshabilitado - Usar resultado mock
             $log("MODO DEMO: OpenAI deshabilitado, usando resultado mock");
-            
+
             // JSON mock de ejemplo para pruebas sin gastar tokens
             $mockData = [
                 'Matriz' => [
@@ -328,6 +335,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['filepath']) && !isset
             ];
             
             $processingResult = json_encode($mockData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            // ✅ Guardar en sesión para mantener estado tras recarga
+            $_SESSION['last_processing_result'] = $processingResult;
             $log("MODO DEMO: Resultado mock generado");
         }
 
