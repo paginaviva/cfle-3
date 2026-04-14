@@ -42,3 +42,6 @@ composer.lock
 node_modules/
 package-lock.json
 yarn.lock
+
+# Ignorar repositorio externo específico
+plazzacityscr/123b
